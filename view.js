@@ -38,7 +38,7 @@
       e('hr', {})));
 
   const getFnSource = (name) => (
-    e('span', { style: 'font-family:monospace;font-style:oblique;color:#888;' },
+    e('span', { style: 'font-family:monospace;color:#888;' },
       MathPerf.tests[name].toString()));
 
   const getInputSelect = (name) => (
