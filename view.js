@@ -163,6 +163,6 @@
       getTestComponent('is-shorter-sqrt'),
       getTestComponent('is-shorter-sqr')),
 
-    e('div', { class: 'footer', style: 'margin-top:3em;font-style:italic;color:#fff;' },
+    e('div', { class: 'footer', style: 'margin-top:3em;font-style:italic;color:#888;' },
       'authored by Zac Delventhal, open-sourced under the MIT License'));
 })();
