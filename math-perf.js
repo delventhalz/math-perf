@@ -2,21 +2,35 @@
 
 window.outputs = {};
 
+const noop = n => n;
+const range = (len, fn) => Array(...Array(len)).map((_, i) => fn(i));
+
 const LUT_RES = 1024;
-const getTrigArray = fn => Array(...Array(LUT_RES)).map((_, i) => (
-  fn((i * 2 * Math.PI / LUT_RES))));
+const getTrigArray = trigFn => range(LUT_RES, i => trigFn((i * 2 * Math.PI / LUT_RES)));
 const LOOKUP = {
   SIN: getTrigArray(Math.sin),
   COS: getTrigArray(Math.cos),
   TAN: getTrigArray(Math.tan),
 };
 
-const noop = n => n;
-const randInputFns = {
-  uint8: () => Math.floor(Math.random() * 256),
-  uint32: () => Math.floor(Math.random() * 4294967296),
-  maxint: () => Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
-  float: () => Math.random() * Number.MAX_SAFE_INTEGER,
+// Largest prime under 2^16
+const RAND_CACHE_SIZE = 65521;
+const getRandCache = xformFn => range(RAND_CACHE_SIZE, () => xformFn(Math.random()));
+const RAND_CACHES = {
+  uint8: getRandCache(r => Math.floor(r * 256)),
+  uint32: getRandCache(r => Math.floor(r * 4294967296)),
+  maxint: getRandCache(r => Math.floor(r * Number.MAX_SAFE_INTEGER)),
+  float: getRandCache(r => r * Number.MAX_SAFE_INTEGER),
+};
+
+// Gets a function which iterates over the appropriate rand cache indefinitely
+const getRandFn = (type) => {
+  const cache = RAND_CACHES[type];
+  let i = -1;
+  return () => {
+    i = i < RAND_CACHE_SIZE ? i + 1 : 0;
+    return cache[i];
+  };
 };
 
 const loopTest = (name, input, testFn, rand, duration) => {
@@ -35,7 +49,7 @@ const loopTest = (name, input, testFn, rand, duration) => {
 // and print the results to the screen and console
 const getTestRunner = (name, testFn) => () => {
   const input = document.getElementById(`${name}-select`).value;
-  const rand = randInputFns[input];
+  const rand = getRandFn(input);
 
   console.log(`-------- testing ${name}(${input}) --------`);
   const noopRun1 = loopTest('noop', input, noop, rand, 2500);
