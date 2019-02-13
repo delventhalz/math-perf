@@ -97,8 +97,8 @@ const getOutputLine = (label, id) => (
     e('em', { id })));
 
 const getTestComponent = (name, testFn) => (
-  e('div', { class: 'perf-runner' },
-    e('h2', {}, name),
+  e('div', { class: 'perf-runner', style: 'margin-top:2em;' },
+    e('h3', {}, name),
     e('div', { style: 'margin-bottom:1em;' },
       getFnSource(testFn)),
     e('div', { style: 'margin-bottom:1em;' },
@@ -112,9 +112,35 @@ const getTestComponent = (name, testFn) => (
 
 // Append UI to DOM
 document.getElementById('app').append(
-  e('div', { id: 'header' },
+  e('div', { class: 'header' },
     e('h1', {}, 'Math Perf')),
-  getTestComponent('add', n => n + 113),
-  getTestComponent('multiply', n => n * 113),
-  getTestComponent('divide', n => n / 113),
-  getTestComponent('modulo', n => n % 113));
+  e('div', { class: 'section' },
+    e('h2', {}, 'Arithmetic'),
+    getTestComponent('add', n => n + 113),
+    getTestComponent('multiply', n => n * 113),
+    getTestComponent('divide', n => n / 113),
+    getTestComponent('modulo', n => n % 113),
+    e('hr', {})),
+  e('div', { class: 'section' },
+    e('h2', {}, 'Higher Maths'),
+    getTestComponent('power', n => n ** 113),
+    getTestComponent('pow', n => Math.pow(n,113)),
+    getTestComponent('sqr', n => n * n),
+    getTestComponent('sqrt', n => Math.sqrt(n)),
+    e('hr', {})),
+  e('div', { class: 'section' },
+    e('h2', {}, 'Logic'),
+    getTestComponent('gt', n => n > 113),
+    getTestComponent('lte', n => n <= 113),
+    getTestComponent('eq', n => n === 113),
+    e('hr', {})),
+  e('div', { class: 'section' },
+    e('h2', {}, 'Number Manipulation'),
+    getTestComponent('floor', n => Math.floor(n)),
+    getTestComponent('round', n => Math.round(n)),
+    getTestComponent('floor-bit', n => n | 0),
+    getTestComponent('abs', n => Math.abs(n)),
+    getTestComponent('abs-bit', n => { const mask = n >> 31; return (mask ^ n) - mask; }),
+    getTestComponent('is-odd', n => n % 2),
+    getTestComponent('is-odd-bit', n => n & 1),
+    e('hr', {})));
