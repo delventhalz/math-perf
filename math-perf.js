@@ -1,6 +1,16 @@
 'use strict';
 
 window.outputs = {};
+
+const LUT_RES = 1024;
+const getTrigArray = fn => Array(...Array(LUT_RES)).map((_, i) => (
+  fn((i * 2 * Math.PI / LUT_RES))));
+const LOOKUP = {
+  SIN: getTrigArray(Math.sin),
+  COS: getTrigArray(Math.cos),
+  TAN: getTrigArray(Math.tan),
+};
+
 const noop = n => n;
 const randInputFns = {
   uint8: () => Math.floor(Math.random() * 256),
@@ -127,6 +137,15 @@ document.getElementById('app').append(
     getTestComponent('pow', n => Math.pow(n,113)),
     getTestComponent('sqr', n => n * n),
     getTestComponent('sqrt', n => Math.sqrt(n)),
+    e('hr', {})),
+  e('div', { class: 'section' },
+    e('h2', {}, 'Trig Functions'),
+    getTestComponent('sin', n => Math.sin(n)),
+    getTestComponent('cos', n => Math.cos(n)),
+    getTestComponent('tan', n => Math.tan(n)),
+    getTestComponent('sin-lut', n => LOOKUP.SIN[Math.floor((n / (2 * Math.PI) % 1) * LUT_RES)]),
+    getTestComponent('cos-lut', n => LOOKUP.COS[Math.floor((n / (2 * Math.PI) % 1) * LUT_RES)]),
+    getTestComponent('tan-lut', n => LOOKUP.TAN[Math.floor((n / (2 * Math.PI) % 1) * LUT_RES)]),
     e('hr', {})),
   e('div', { class: 'section' },
     e('h2', {}, 'Logic'),
