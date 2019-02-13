@@ -196,4 +196,12 @@ document.getElementById('app').append(
     getTestComponent('abs-bit', n => { const mask = n >> 31; return (mask ^ n) - mask; }),
     getTestComponent('is-odd', n => n % 2),
     getTestComponent('is-odd-bit', n => n & 1),
-    e('hr', {})));
+    e('hr', {})),
+  e('div', { class: 'section' },
+    e('h2', {}, 'Polynomials'),
+    getTestComponent('quadratic', n => Math.pow(n, 2) + 17 * n - 113),
+    getTestComponent('factors', n => (n + 17) * (n - 113)),
+    getTestComponent('ten-ops', n =>  (n - 23) / (n + 17) * (n + 19) / (n - 13) * (n - 29) - 113),
+    getTestComponent('is-shorter-sqrt', n => Math.sqrt(Math.pow(n - 17, 2) + Math.pow(n - 13, 2)) < 113, 5),
+    getTestComponent('is-shorter-sqr', n => Math.pow(n - 17, 2) + Math.pow(n - 13, 2) < Math.pow(113, 2), 5),
+    e('hr', {})),);
