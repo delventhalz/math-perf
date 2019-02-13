@@ -73,6 +73,10 @@ const e = (tag, { onclick, ...attrs }, ...children) => {
 };
 
 // UI Components
+const getFnSource = (fn) => (
+  e('span', { style: 'font-family:monospace;font-style:oblique;color:#888;' },
+    fn.toString()));
+
 const getInputSelect = (name) => (
   e('select', { id: `${name}-select` },
     e('option', { value: 'uint8' }, 'Uint8'),
@@ -90,13 +94,15 @@ const getRunButton = (name, testFn) => (
 const getOutputLine = (label, id) => (
   e('div', {},
     e('span', { style: 'margin-right:1em;' }, label),
-    e('span', { id })));
+    e('em', { id })));
 
 const getTestComponent = (name, testFn) => (
   e('div', { class: 'perf-runner' },
     e('h2', {}, name),
     e('div', { style: 'margin-bottom:1em;' },
-      e('span', { style: 'margin-right:1em;' }, 'Inputs:'),
+      getFnSource(testFn)),
+    e('div', { style: 'margin-bottom:1em;' },
+      e('strong', { style: 'margin-right:1em;' }, 'Inputs:'),
       getInputSelect(name),
       getRunButton(name, testFn)),
     getOutputLine('Runs in 10s  :', `${name}-result-runs`),
@@ -108,4 +114,7 @@ const getTestComponent = (name, testFn) => (
 document.getElementById('app').append(
   e('div', { id: 'header' },
     e('h1', {}, 'Math Perf')),
-  getTestComponent('add', n => n + 113));
+  getTestComponent('add', n => n + 113),
+  getTestComponent('multiply', n => n * 113),
+  getTestComponent('divide', n => n / 113),
+  getTestComponent('modulo', n => n % 113));
