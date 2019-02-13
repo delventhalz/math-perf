@@ -79,6 +79,14 @@
     e('div', { class: 'header' },
       e('h1', {}, 'Math Perf'),
 
+      e('div', {},
+        '[',
+        e('a', {
+          href: 'https://github.com/delventhalz/math-perf',
+          target: '_blank',
+        }, 'GitHub'),
+        ']'),
+
       e('p', {},
         'This page is a simple tool to try to test the performance of various ',
         'numerical operations across a variety of browsers and devices. ',
@@ -153,5 +161,8 @@
       getTestComponent('factors'),
       getTestComponent('ten-ops'),
       getTestComponent('is-shorter-sqrt'),
-      getTestComponent('is-shorter-sqr')));
+      getTestComponent('is-shorter-sqr')),
+
+    e('div', { class: 'footer', style: 'margin-top:3em;font-style:italic;color:#fff;' },
+      'authored by Zac Delventhal, open-sourced under the MIT License'));
 })();
