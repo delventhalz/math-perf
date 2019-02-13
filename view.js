@@ -17,11 +17,11 @@
   const getTestRunner = (name) => () => {
     const input = document.getElementById(`${name}-select`).value;
 
-    const { runs, duration, noloop, ratio } = MathPerf.runTest(name, input);
+    const { runs, loop, operation, ratio } = MathPerf.runTest(name, input);
 
     document.getElementById(`${name}-result-runs`).innerText = runs.toLocaleString();
-    document.getElementById(`${name}-result-raw`).innerText = `${duration.toFixed(2)}ns`;
-    document.getElementById(`${name}-result-no-loop`).innerText = `${noloop.toFixed(2)}ns`;
+    document.getElementById(`${name}-result-loop`).innerText = `${loop.toFixed(2)}ns`;
+    document.getElementById(`${name}-result-operation`).innerText = `${operation.toFixed(2)}ns`;
     document.getElementById(`${name}-result-ratio`).innerText = `${ratio.toFixed(2)}x`;
   };
 
@@ -69,10 +69,10 @@
         e('strong', { style: 'margin-right:1em;' }, 'Inputs:'),
         getInputSelect(name),
         getRunButton(name)),
-      getOutputLine('Number of runs in 10s :', `${name}-result-runs`),
-      getOutputLine('Duration per run (raw):', `${name}-result-raw`),
-      getOutputLine('Without loop (approx.):', `${name}-result-no-loop`),
-      getOutputLine('Ratio to noop control :', `${name}-result-ratio`)));
+      getOutputLine('Number of runs    :', `${name}-result-runs`),
+      getOutputLine('Duration per loop :', `${name}-result-loop`),
+      getOutputLine('Operation duration:', `${name}-result-operation`),
+      getOutputLine('Ratio to noop loop:', `${name}-result-ratio`)));
 
   // Append UI to DOM
   document.getElementById('app').append(
@@ -91,7 +91,7 @@
         'This page is a simple tool to try to test the performance of various ',
         'numerical operations across a variety of browsers and devices. ',
         'Clicking "Run", will loop the specified function repeatedly for ',
-        '10 seconds against random inputs. It will also loop a simple noop',
+        '10 seconds against random inputs. It will also loop a simple noop ',
         'function for 10 seconds as a control.'),
 
       e('p', {}, 'The Inputs:',
@@ -99,7 +99,7 @@
           getDefListItem('Uint8', 'Random whole numbers from 0 - 255'),
           getDefListItem('Uint32', 'Random whole numbers from 0 - 4,294,967,295'),
           getDefListItem('Max Safe Int', 'Random whole numbers from 0 - 9,007,199,254,740,990'),
-          getDefListItem('Float', 'Random decimal numbers from 0 - 9,007,199,254,740,990'))),
+          getDefListItem('Float', 'Random decimal numbers from 0.0 - 9,007,199,254,740,990.0'))),
 
       e('p', {}, 'The Outputs:',
         e('ul', {},
@@ -107,14 +107,14 @@
             'Number of runs',
             'Number of loops completed in 10 seconds'),
           getDefListItem(
-            'Duration per run',
+            'Duration per loop',
             'Raw duration per whole loop iteration in nanoseconds'),
           getDefListItem(
-            'Without loop',
-            'Tries to get actual operation duration by subtracting noop time'),
+            'Operation duration',
+            'Find actual operation duration by subtracting noop loop time (unreliable!)'),
           getDefListItem(
-            'Ratio to noop',
-            'How many times slower than the noop loop each run was (lower better)')))),
+            'Ratio to noop runs',
+            'How many times slower than the noop loops it was (lower is better)')))),
 
     getSection(
       'Arithmetic',

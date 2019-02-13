@@ -109,14 +109,14 @@
 
     const results = {
       runs: testRuns,
-      duration: testDuration,
-      noloop: testDuration - noopDuration,
+      loop: testDuration,
+      operation: testDuration - noopDuration,
       ratio: testDuration / noopDuration,
     }
 
-    console.log(`\n${name}(${input}) total runs      :`, results.runs.toLocaleString());
-    console.log(`${name}(${input}) duration (raw)    :`, `${results.duration.toFixed(2)}ns`);
-    console.log(`${name}(${input}) duration (no loop):`, `${results.noloop.toFixed(2)}ns`);
+    console.log(`\n${name}(${input}) total runs        :`, results.runs.toLocaleString());
+    console.log(`${name}(${input}) duration (raw)    :`, `${results.loop.toFixed(2)}ns`);
+    console.log(`${name}(${input}) duration (no loop):`, `${results.operation.toFixed(2)}ns`);
     console.log(`${name}(${input}) duration (ratio)  :`, `${results.ratio.toFixed(2)}x`);
     console.log('-------------------------------------');
 
