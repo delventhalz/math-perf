@@ -1,11 +1,15 @@
 'use strict';
 
+const LUT_RES = 1024;
+
+// Largest prime under 2^16
+const RAND_CACHE_SIZE = 65521;
+
 window.outputs = {};
 
 const noop = n => n;
 const range = (len, fn) => Array(...Array(len)).map((_, i) => fn(i));
 
-const LUT_RES = 1024;
 const getTrigArray = trigFn => range(LUT_RES, i => trigFn((i * 2 * Math.PI / LUT_RES)));
 const LOOKUP = {
   SIN: getTrigArray(Math.sin),
@@ -13,8 +17,6 @@ const LOOKUP = {
   TAN: getTrigArray(Math.tan),
 };
 
-// Largest prime under 2^16
-const RAND_CACHE_SIZE = 65521;
 const getRandCache = xformFn => range(RAND_CACHE_SIZE, () => xformFn(Math.random()));
 const RAND_CACHES = {
   uint8: getRandCache(r => Math.floor(r * 256)),
@@ -33,12 +35,13 @@ const getRandFn = (type) => {
   };
 };
 
-const loopTest = (name, input, testFn, rand, duration) => {
+const loopTest = (name, input, testFn) => {
   window.outputs[name] = [];
   const outputs = window.outputs[name];
+  const rand = getRandFn(input);
+  const stop = Date.now() + 2500;
 
   // Test Loop
-  const stop = Date.now() + duration;
   while (Date.now() < stop) {
     outputs.push(testFn(rand()));
   }
@@ -52,38 +55,43 @@ const loopTest = (name, input, testFn, rand, duration) => {
 // and print the results to the screen and console
 const getTestRunner = (name, testFn) => () => {
   const input = document.getElementById(`${name}-select`).value;
-  const rand = getRandFn(input);
-
   console.log(`-------- testing ${name}(${input}) --------`);
-  const noopRun1 = loopTest('noop', input, noop, rand, 2500);
-  const testRun1 = loopTest(name, input, testFn, rand, 2500);
-  const testRun2 = loopTest(name, input, testFn, rand, 2500);
-  const noopRun2 = loopTest('noop', input, noop, rand, 2500);
-  const noopRun3 = loopTest('noop', input, noop, rand, 2500);
-  const testRun3 = loopTest(name, input, testFn, rand, 2500);
-  const testRun4 = loopTest(name, input, testFn, rand, 2500);
-  const noopRun4 = loopTest('noop', input, noop, rand, 2500);
 
+  // Alternate between a test run and a noop run in alternating order
+  const noopRun1 = loopTest('noop', input, noop);
+  const testRun1 = loopTest(name, input, testFn);
+  const testRun2 = loopTest(name, input, testFn);
+  const noopRun2 = loopTest('noop', input, noop);
+  const noopRun3 = loopTest('noop', input, noop);
+  const testRun3 = loopTest(name, input, testFn);
+  const testRun4 = loopTest(name, input, testFn);
+  const noopRun4 = loopTest('noop', input, noop);
+
+  // Calculate results
   const noopRuns = noopRun1 + noopRun2 + noopRun3 + noopRun4;
   const testRuns = testRun1 + testRun2 + testRun3 + testRun4;
   const noopDuration = 10000000 / noopRuns;
   const testDuration = 10000000 / testRuns;
 
+  // Format results
   const runsOutput = testRuns.toLocaleString();
   const durationOutput = `${testDuration.toFixed(3)}μs`;
   const noLoopOutput = `${(testDuration - noopDuration).toFixed(3)}μs`;
   const ratioOutput = `${(testDuration / noopDuration).toFixed(2)}x`;
 
+  // Log results
   console.log(`\n${name}(${input}) total runs      :`, runsOutput);
   console.log(`${name}(${input}) duration (raw)    :`, durationOutput);
   console.log(`${name}(${input}) duration (no loop):`, noLoopOutput);
   console.log(`${name}(${input}) duration (ratio)  :`, ratioOutput);
-  console.log('-------------------------------------');
 
+  // Write results to UI
   document.getElementById(`${name}-result-runs`).innerText = runsOutput;
   document.getElementById(`${name}-result-raw`).innerText = durationOutput;
   document.getElementById(`${name}-result-no-loop`).innerText = noLoopOutput;
   document.getElementById(`${name}-result-ratio`).innerText = ratioOutput;
+
+  console.log('-------------------------------------');
 };
 
 // Create an element, short name makes it easy to nest many calls
