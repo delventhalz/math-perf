@@ -27,8 +27,8 @@ The tests are hosted a GitHub page, which you can visit here:
 [https://delventhalz.github.io/math-perf/](https://delventhalz.github.io/math-perf/)
 
 Click the run button next to a test will run it against random inputs of the specified type
-for ten seconds and compare it to 10 seconds of running random inputs through a control
-"noop" function. Takes a total of 20 seconds to complete.
+for fifteen seconds and compare it to fifteen seconds of running random inputs through
+a control "noop" function. Takes a total of 30 seconds to complete.
 
 #### Serve Locally
 

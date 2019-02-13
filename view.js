@@ -17,9 +17,9 @@
   const getTestRunner = (name) => () => {
     const input = document.getElementById(`${name}-select`).value;
 
-    const { runs, loop, operation, ratio } = MathPerf.runTest(name, input);
+    const { rate, loop, operation, ratio } = MathPerf.runTest(name, input);
 
-    document.getElementById(`${name}-result-runs`).innerText = runs.toLocaleString();
+    document.getElementById(`${name}-result-rate`).innerText = `${rate.toLocaleString()}/sec`;
     document.getElementById(`${name}-result-loop`).innerText = `${loop.toFixed(2)}ns`;
     document.getElementById(`${name}-result-operation`).innerText = `${operation.toFixed(2)}ns`;
     document.getElementById(`${name}-result-ratio`).innerText = `${ratio.toFixed(2)}x`;
@@ -69,10 +69,10 @@
         e('strong', { style: 'margin-right:1em;' }, 'Inputs:'),
         getInputSelect(name),
         getRunButton(name)),
-      getOutputLine('Number of runs    :', `${name}-result-runs`),
+      getOutputLine('Rate of test loops:', `${name}-result-rate`),
       getOutputLine('Duration per loop :', `${name}-result-loop`),
       getOutputLine('Operation duration:', `${name}-result-operation`),
-      getOutputLine('Ratio to noop loop:', `${name}-result-ratio`)));
+      getOutputLine('Ratio vs noop func:', `${name}-result-ratio`)));
 
   // Append UI to DOM
   document.getElementById('app').append(
@@ -91,8 +91,9 @@
         'This page is a simple tool to try to test the performance of various ',
         'numerical operations across a variety of browsers and devices. ',
         'Clicking "Run", will loop the specified function repeatedly for ',
-        '10 seconds against random inputs. It will also loop a simple noop ',
-        'function for 10 seconds as a control.'),
+        '15 seconds against random inputs. It will also loop a simple noop ',
+        'function for 15 seconds as a control. So each run will take a total ',
+        'of 30 seconds to complete.'),
 
       e('p', {}, 'The Inputs:',
         e('ul', {},
@@ -104,8 +105,8 @@
       e('p', {}, 'The Outputs:',
         e('ul', {},
           getDefListItem(
-            'Number of runs',
-            'Number of loops completed in 10 seconds'),
+            'Rate of test loops',
+            'Number of loops completed each second'),
           getDefListItem(
             'Duration per loop',
             'Raw duration per whole loop iteration in nanoseconds'),
@@ -113,7 +114,7 @@
             'Operation duration',
             'Find actual operation duration by subtracting noop loop time (unreliable!)'),
           getDefListItem(
-            'Ratio to noop runs',
+            'Ratio to noop rate',
             'How many times slower than the noop loops it was (lower is better)')))),
 
     getSection(

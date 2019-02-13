@@ -7,7 +7,7 @@
   // LUT_RES = 1024;
   // PI_2 = 6.283185307179586;
 
-  const LOOP_COUNT = 4;  // Must be even
+  const LOOP_COUNT = 6;  // Must be even
   const LOOP_DURATION = 2500;
 
   const recentOutputs = {};
@@ -108,21 +108,21 @@
       testRuns: total.testRuns + iteration.testRuns,
     }));
 
-    // 10,000,000,000 (i.e. 10 billion nanoseconds)
-    const noopDuration = 10000000000 / noopRuns;
-    const testDuration = 10000000000 / testRuns;
+    // Duration in nanoseconds
+    const noopDuration = 1000000 * LOOP_COUNT * LOOP_DURATION / noopRuns;
+    const testDuration = 1000000 * LOOP_COUNT * LOOP_DURATION  / testRuns;
 
     const results = {
-      runs: testRuns,
+      rate: Math.floor(testRuns / (LOOP_COUNT * LOOP_DURATION / 1000)),
       loop: testDuration,
       operation: testDuration - noopDuration,
       ratio: testDuration / noopDuration,
-    }
+    };
 
-    console.log(`\n${name}(${input}) total runs        :`, results.runs.toLocaleString());
-    console.log(`${name}(${input}) duration (raw)    :`, `${results.loop.toFixed(2)}ns`);
-    console.log(`${name}(${input}) duration (no loop):`, `${results.operation.toFixed(2)}ns`);
-    console.log(`${name}(${input}) duration (ratio)  :`, `${results.ratio.toFixed(2)}x`);
+    console.log(`\n${name}(${input}) rate of test runs : ${results.rate.toLocaleString()}/sec`);
+    console.log(`${name}(${input}) duration (raw)    : ${results.loop.toFixed(2)}ns`);
+    console.log(`${name}(${input}) duration (no loop): ${results.operation.toFixed(2)}ns`);
+    console.log(`${name}(${input}) duration (ratio)  : ${results.ratio.toFixed(2)}x`);
     console.log('-------------------------------------');
 
     return results;
