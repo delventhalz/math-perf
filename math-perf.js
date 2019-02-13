@@ -34,13 +34,16 @@ const getRandFn = (type) => {
 };
 
 const loopTest = (name, input, testFn, rand, duration) => {
-  window.outputs[name]= [];
+  window.outputs[name] = [];
+  const outputs = window.outputs[name];
+
+  // Test Loop
   const stop = Date.now() + duration;
   while (Date.now() < stop) {
-    window.outputs[name].push(testFn(rand()));
+    outputs.push(testFn(rand()));
   }
 
-  const runs = window.outputs[name].length;
+  const runs = outputs.length;
   console.log(`${name}(${input}) runs:`, runs.toLocaleString());
   return runs;
 };
