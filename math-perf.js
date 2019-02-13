@@ -7,6 +7,9 @@
   // LUT_RES = 1024;
   // PI_2 = 6.283185307179586;
 
+  const LOOP_COUNT = 4;  // Must be even
+  const LOOP_DURATION = 2500;
+
   const recentOutputs = {};
   const range = (len, fn) => Array(...Array(len)).map((_, i) => fn(i));
 
@@ -74,7 +77,7 @@
     const randCache = RAND_CACHES[input];
     let r = -1;
 
-    const stop = Date.now() + 2500;
+    const stop = Date.now() + LOOP_DURATION;
 
     // Test Loop
     while (Date.now() < stop) {
@@ -91,17 +94,19 @@
     console.log(`-------- testing ${name}(${input}) --------`);
 
     // Alternate between a test run and a noop run in alternating order
-    const noopRun1 = loopTest('noop', input);
-    const testRun1 = loopTest(name, input);
-    const testRun2 = loopTest(name, input);
-    const noopRun2 = loopTest('noop', input);
-    const noopRun3 = loopTest('noop', input);
-    const testRun3 = loopTest(name, input);
-    const testRun4 = loopTest(name, input);
-    const noopRun4 = loopTest('noop', input);
-
-    const noopRuns = noopRun1 + noopRun2 + noopRun3 + noopRun4;
-    const testRuns = testRun1 + testRun2 + testRun3 + testRun4;
+    const { noopRuns, testRuns } = range(Math.floor(LOOP_COUNT / 2), () => {
+      const noopRun1 = loopTest('noop', input);
+      const testRun1 = loopTest(name, input);
+      const testRun2 = loopTest(name, input);
+      const noopRun2 = loopTest('noop', input);
+      return {
+        noopRuns: noopRun1 + noopRun2,
+        testRuns: testRun1 + testRun2,
+      };
+    }).reduce((total, iteration) => ({
+      noopRuns: total.noopRuns + iteration.noopRuns,
+      testRuns: total.testRuns + iteration.testRuns,
+    }));
 
     // 10,000,000,000 (i.e. 10 billion nanoseconds)
     const noopDuration = 10000000000 / noopRuns;
