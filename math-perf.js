@@ -65,26 +65,21 @@
     float: getRandCache(r => r * Number.MAX_SAFE_INTEGER),
   };
 
-  const getRandFn = (type) => {
-    const cache = RAND_CACHES[type];
-    let i = -1;
-    return () => {
-      i = i < 65521 ? i + 1 : 0;  // RAND_CACHE_SIZE
-      return cache[i];
-    };
-  };
-
   // Running Tests
   const loopTest = (name, input) => {
     recentOutputs[name] = [];
     const outputs = recentOutputs[name];
-    const test = tests[name];
-    const rand = getRandFn(input);
+    const testFn = tests[name];
+
+    const randCache = RAND_CACHES[input];
+    let r = -1;
+
     const stop = Date.now() + 2500;
 
     // Test Loop
     while (Date.now() < stop) {
-      outputs.push(test(rand()));
+      r = r < 65521 ? r + 1 : 0;  // RAND_CACHE_SIZE
+      outputs.push(testFn(randCache[r]));
     }
 
     const runs = outputs.length;

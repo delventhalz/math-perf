@@ -75,7 +75,7 @@ MathPerf.runTest('add', 'uint8');  // ...
 
 ### The Test Loop
 
-The [test loop](./math-perf.js#L82) contains the minimum amount of logic possible, but still
+The [test loop](./math-perf.js#L78) contains the minimum amount of logic possible, but still
 runs some code other than the operation being tests. It will:
 
 1. Get `Date.now()`
