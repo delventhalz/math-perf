@@ -53,11 +53,13 @@
       e('option', { value: 'float' }, 'Float')));
 
   const getRunButton = (name) => (
-    e('button', {
+    e('input', {
+      type: 'button',
       id: `${name}-button`,
       style: 'margin-left:3em;',
       onclick: getTestRunner(name),
-    }, 'Run'));
+      value: 'Run',
+    }));
 
   const getIsRunningIndicator = (name) => (
     e('em', {
