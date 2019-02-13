@@ -1,14 +1,17 @@
 ;(function() {
   'use strict';
 
-  const LUT_RES = 1024;
-  const RAND_CACHE_SIZE = 65521;
+  // Hard-coding all constants used in test loop in an attempt to
+  // speed up as much as possible.
+  // RAND_CACHE_SIZE = 65521;
+  // LUT_RES = 1024;
+  // PI_2 = 6.283185307179586;
 
   const recentOutputs = {};
   const range = (len, fn) => Array(...Array(len)).map((_, i) => fn(i));
 
   // Tests
-  const getTrigArray = trigFn => range(LUT_RES, i => trigFn((i * 2 * Math.PI / LUT_RES)));
+  const getTrigArray = trigFn => range(1024, i => trigFn((i * 2 * Math.PI / 1024)));  // LUT_RES
   const LOOKUP = {
     SIN: getTrigArray(Math.sin),
     COS: getTrigArray(Math.cos),
@@ -30,9 +33,9 @@
     sin: n => Math.sin(n),
     cos: n => Math.cos(n),
     tan: n => Math.tan(n),
-    'sin-lut': n => LOOKUP.SIN[Math.floor((n / (2 * Math.PI) % 1) * LUT_RES)],
-    'cos-lut': n => LOOKUP.COS[Math.floor((n / (2 * Math.PI) % 1) * LUT_RES)],
-    'tan-lut': n => LOOKUP.TAN[Math.floor((n / (2 * Math.PI) % 1) * LUT_RES)],
+    'sin-lut': n => LOOKUP.SIN[Math.floor((n / 6.283185307179586 % 1) * 1024)],  // PI_2, LUT_RES
+    'cos-lut': n => LOOKUP.COS[Math.floor((n / 6.283185307179586 % 1) * 1024)],  // PI_2, LUT_RES
+    'tan-lut': n => LOOKUP.TAN[Math.floor((n / 6.283185307179586 % 1) * 1024)],  // PI_2, LUT_RES
 
     gt: n => n > 113,
     lte: n => n <= 113,
@@ -54,10 +57,10 @@
   };
 
   // Random Inputs
-  const getRandCache = xformFn => range(RAND_CACHE_SIZE, () => xformFn(Math.random()));
+  const getRandCache = xformFn => range(65521, () => xformFn(Math.random()));  // RAND_CACHE_SIZE
   const RAND_CACHES = {
-    uint8: getRandCache(r => Math.floor(r * 256)),
-    uint32: getRandCache(r => Math.floor(r * 4294967296)),
+    uint8: getRandCache(r => Math.floor(r * 2 ** 8)),
+    uint32: getRandCache(r => Math.floor(r * 2 ** 32)),
     maxint: getRandCache(r => Math.floor(r * Number.MAX_SAFE_INTEGER)),
     float: getRandCache(r => r * Number.MAX_SAFE_INTEGER),
   };
@@ -66,7 +69,7 @@
     const cache = RAND_CACHES[type];
     let i = -1;
     return () => {
-      i = i < RAND_CACHE_SIZE ? i + 1 : 0;
+      i = i < 65521 ? i + 1 : 0;  // RAND_CACHE_SIZE
       return cache[i];
     };
   };
