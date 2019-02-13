@@ -117,6 +117,10 @@
             'How many times slower than the noop loops it was (lower is better)')))),
 
     getSection(
+      'Noop',
+      getTestComponent('noop')),
+
+    getSection(
       'Arithmetic',
       getTestComponent('add'),
       getTestComponent('multiply'),
