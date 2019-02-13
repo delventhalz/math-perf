@@ -21,6 +21,8 @@ const loopTest = (name, input, testFn, rand, duration) => {
   return runs;
 };
 
+// Run the test function and a noop control in an alternating pattern
+// and print the results to the screen and console
 const getTestRunner = (name, testFn) => () => {
   const input = document.getElementById(`${name}-select`).value;
   const rand = randInputFns[input];
@@ -40,10 +42,21 @@ const getTestRunner = (name, testFn) => () => {
   const noopDuration = 10000000 / noopRuns;
   const testDuration = 10000000 / testRuns;
 
-  console.log(`\n${name}(${input}) duration   (raw): ${testDuration.toFixed(3)}μs`);
-  console.log(`${name}(${input}) duration (-noop): ${(testDuration - noopDuration).toFixed(3)}μs`);
-  console.log(`${name}(${input}) duration (ratio): ${(testDuration / noopDuration).toFixed(2)}x`);
+  const runsOutput = testRuns.toLocaleString();
+  const durationOutput = `${testDuration.toFixed(3)}μs`;
+  const noLoopOutput = `${(testDuration - noopDuration).toFixed(3)}μs`;
+  const ratioOutput = `${(testDuration / noopDuration).toFixed(2)}x`;
+
+  console.log(`\n${name}(${input}) runs              :`, runsOutput);
+  console.log(`${name}(${input}) duration (raw)    :`, durationOutput);
+  console.log(`${name}(${input}) duration (no loop):`, noLoopOutput);
+  console.log(`${name}(${input}) duration (ratio)  :`, ratioOutput);
   console.log('-------------------------------------');
+
+  document.getElementById(`${name}-result-runs`).innerText = runsOutput;
+  document.getElementById(`${name}-result-raw`).innerText = durationOutput;
+  document.getElementById(`${name}-result-no-loop`).innerText = noLoopOutput;
+  document.getElementById(`${name}-result-ratio`).innerText = ratioOutput;
 };
 
 // Create an element, short name makes it easy to nest many calls
@@ -59,6 +72,7 @@ const e = (tag, { onclick, ...attrs }, ...children) => {
   return elem;
 };
 
+// UI Components
 const getInputSelect = (name) => (
   e('select', { id: `${name}-select` },
     e('option', { value: 'uint8' }, 'Uint8'),
@@ -66,17 +80,32 @@ const getInputSelect = (name) => (
     e('option', { value: 'maxint' }, 'Max Safe Int'),
     e('option', { value: 'float' }, 'Float')));
 
-const getRunner = (name, onclick) => (
+const getRunButton = (name, testFn) => (
+  e('button', {
+    id: `${name}-button`,
+    style: 'margin-left:3em;',
+    onclick: getTestRunner(name, testFn),
+  }, 'Run'));
+
+const getOutputLine = (label, id) => (
+  e('div', {},
+    e('span', { style: 'margin-right:1em;' }, label),
+    e('span', { id })));
+
+const getTestComponent = (name, testFn) => (
   e('div', { class: 'perf-runner' },
     e('h2', {}, name),
-    e('div', {},
-      e('span', { style: 'padding-right:1em;' }, 'Inputs:'),
+    e('div', { style: 'margin-bottom:1em;' },
+      e('span', { style: 'margin-right:1em;' }, 'Inputs:'),
       getInputSelect(name),
-      e('span', { style: 'padding-left:3em;' },
-        e('button', { id: `${name}-button`, onclick }, 'Run')))));
+      getRunButton(name, testFn)),
+    getOutputLine('Runs in 10s  :', `${name}-result-runs`),
+    getOutputLine('Raw duration :', `${name}-result-raw`),
+    getOutputLine('Without loop :', `${name}-result-no-loop`),
+    getOutputLine('Ratio to noop:', `${name}-result-ratio`)));
 
-// Append UI
+// Append UI to DOM
 document.getElementById('app').append(
   e('div', { id: 'header' },
     e('h1', {}, 'Math Perf')),
-  getRunner('add', getTestRunner('add', n => n + 113)));
+  getTestComponent('add', n => n + 113));
