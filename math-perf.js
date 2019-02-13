@@ -57,7 +57,7 @@ const getTestRunner = (name, testFn) => () => {
   const noLoopOutput = `${(testDuration - noopDuration).toFixed(3)}μs`;
   const ratioOutput = `${(testDuration / noopDuration).toFixed(2)}x`;
 
-  console.log(`\n${name}(${input}) runs              :`, runsOutput);
+  console.log(`\n${name}(${input}) total runs      :`, runsOutput);
   console.log(`${name}(${input}) duration (raw)    :`, durationOutput);
   console.log(`${name}(${input}) duration (no loop):`, noLoopOutput);
   console.log(`${name}(${input}) duration (ratio)  :`, ratioOutput);
@@ -91,8 +91,8 @@ const getInputSelect = (name) => (
   e('select', { id: `${name}-select` },
     e('option', { value: 'uint8' }, 'Uint8'),
     e('option', { value: 'uint32' }, 'Uint32'),
-    e('option', { value: 'maxint' }, 'Max Safe Int'),
-    e('option', { value: 'float' }, 'Float')));
+    e('option', { value: 'maxint' }, 'Max Safe Int (unsigned)'),
+    e('option', { value: 'float' }, 'Float (unsigned)')));
 
 const getRunButton = (name, testFn) => (
   e('button', {
@@ -115,10 +115,10 @@ const getTestComponent = (name, testFn) => (
       e('strong', { style: 'margin-right:1em;' }, 'Inputs:'),
       getInputSelect(name),
       getRunButton(name, testFn)),
-    getOutputLine('Runs in 10s  :', `${name}-result-runs`),
-    getOutputLine('Raw duration :', `${name}-result-raw`),
-    getOutputLine('Without loop :', `${name}-result-no-loop`),
-    getOutputLine('Ratio to noop:', `${name}-result-ratio`)));
+    getOutputLine('Number of runs in 10s :', `${name}-result-runs`),
+    getOutputLine('Duration per run (raw):', `${name}-result-raw`),
+    getOutputLine('Without loop (approx.):', `${name}-result-no-loop`),
+    getOutputLine('Ratio to noop control :', `${name}-result-ratio`)));
 
 // Append UI to DOM
 document.getElementById('app').append(
