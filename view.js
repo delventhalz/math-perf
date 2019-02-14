@@ -12,14 +12,21 @@
   };
 
   const getTestRunner = (name) => () => {
+    document.getElementById(`${name}-is-running`).hidden = false;
     const input = document.getElementById(`${name}-select`).value;
 
-    const { rate, loop, operation, ratio } = MathPerf.runTest(name, input);
+    // Wait for DOM to redraw before running tests
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const { rate, loop, operation, ratio } = MathPerf.runTest(name, input);
 
-    document.getElementById(`${name}-result-rate`).innerText = `${rate.toLocaleString()}/sec`;
-    document.getElementById(`${name}-result-loop`).innerText = `${loop.toFixed(2)}ns`;
-    document.getElementById(`${name}-result-operation`).innerText = `${operation.toFixed(2)}ns`;
-    document.getElementById(`${name}-result-ratio`).innerText = `${ratio.toFixed(2)}x`;
+        document.getElementById(`${name}-result-rate`).innerText = `${rate.toLocaleString()}/sec`;
+        document.getElementById(`${name}-result-loop`).innerText = `${loop.toFixed(2)}ns`;
+        document.getElementById(`${name}-result-operation`).innerText = `${operation.toFixed(2)}ns`;
+        document.getElementById(`${name}-result-ratio`).innerText = `${ratio.toFixed(2)}x`;
+        document.getElementById(`${name}-is-running`).hidden = true;
+      });
+    });
   };
 
   // UI Components
@@ -52,6 +59,13 @@
       onclick: getTestRunner(name),
     }, 'Run'));
 
+  const getIsRunningIndicator = (name) => (
+    e('em', {
+      id: `${name}-is-running`,
+      style: 'margin-left:1em;',
+      hidden: true
+    }, 'Running...'));
+
   const getOutputLine = (label, id) => (
     e('div', {},
       e('span', { style: 'margin-right:1em;' }, label),
@@ -65,7 +79,8 @@
       e('div', { style: 'margin-bottom:1em;' },
         e('strong', { style: 'margin-right:1em;' }, 'Inputs:'),
         getInputSelect(name),
-        getRunButton(name)),
+        getRunButton(name),
+        getIsRunningIndicator(name)),
       getOutputLine('Rate of test loops:', `${name}-result-rate`),
       getOutputLine('Duration per loop :', `${name}-result-loop`),
       getOutputLine('Operation duration:', `${name}-result-operation`),
