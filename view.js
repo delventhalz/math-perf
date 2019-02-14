@@ -18,12 +18,17 @@
     // Wait for DOM to redraw before running tests
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const { rate, loop, operation, ratio } = MathPerf.runTest(name, input);
+        try {
+          const { rate, loop, operation, ratio } = MathPerf.runTest(name, input);
 
-        document.getElementById(`${name}-result-rate`).innerText = `${rate.toLocaleString()}/sec`;
-        document.getElementById(`${name}-result-loop`).innerText = `${loop.toFixed(2)}ns`;
-        document.getElementById(`${name}-result-operation`).innerText = `${operation.toFixed(2)}ns`;
-        document.getElementById(`${name}-result-ratio`).innerText = `${ratio.toFixed(2)}x`;
+          document.getElementById(`${name}-result-rate`).innerText = `${rate.toLocaleString()}/sec`;
+          document.getElementById(`${name}-result-loop`).innerText = `${loop.toFixed(2)}ns`;
+          document.getElementById(`${name}-result-operation`).innerText = `${operation.toFixed(2)}ns`;
+          document.getElementById(`${name}-result-ratio`).innerText = `${ratio.toFixed(2)}x`;
+        } catch (err) {
+          console.error(err);
+          alert(`Run Failed: ${err.message}`);
+        }
         document.getElementById(`${name}-is-running`).hidden = true;
       });
     });
