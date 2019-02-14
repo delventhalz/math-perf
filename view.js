@@ -2,13 +2,10 @@
   'use strict';
 
   // Creates an element, short name makes it easy to nest many calls
-  const e = (tag, { onclick, ...attrs }, ...children) => {
+  const e = (tag, attrs, ...children) => {
     const elem = document.createElement(tag);
     for (const [key, value] of Object.entries(attrs)) {
-      elem.setAttribute(key, value);
-    }
-    if (onclick) {
-      elem.onclick = onclick;
+      elem[key] = value;
     }
     elem.append(...children);
     return elem;
