@@ -7,10 +7,10 @@
   // LUT_RES = 1024;
   // PI_2 = 6.283185307179586;
 
-  const LOOP_COUNT = 6;  // Must be even
-  const LOOP_DURATION = 2500;
+  const LOOP_COUNT = 12;  // Must be even
+  const LOOP_DURATION = 1250;
 
-  const recentOutputs = {};
+  const recentOutputs = [];
   const range = (len, fn) => Array(...Array(len)).map((_, i) => fn(i));
 
   // Tests
@@ -70,22 +70,19 @@
 
   // Running Tests
   const loopTest = (name, input) => {
-    recentOutputs[name] = [];
-    const outputs = recentOutputs[name];
+    recentOutputs.length = 0;
     const testFn = tests[name];
-
     const randCache = RAND_CACHES[input];
     let r = -1;
-
     const stop = Date.now() + LOOP_DURATION;
 
     // Test Loop
     while (Date.now() < stop) {
       r = r < 65521 ? r + 1 : 0;  // RAND_CACHE_SIZE
-      outputs.push(testFn(randCache[r]));
+      recentOutputs.push(testFn(randCache[r]));
     }
 
-    const runs = outputs.length;
+    const runs = recentOutputs.length;
     console.log(`${name}(${input}) runs:`, runs.toLocaleString());
     return runs;
   };
@@ -95,10 +92,10 @@
 
     // Alternate between a test run and a noop run in alternating order
     const { noopRuns, testRuns } = range(Math.floor(LOOP_COUNT / 2), () => {
-      const noopRun1 = loopTest('noop', input);
       const testRun1 = loopTest(name, input);
-      const testRun2 = loopTest(name, input);
+      const noopRun1 = loopTest('noop', input);
       const noopRun2 = loopTest('noop', input);
+      const testRun2 = loopTest(name, input);
       return {
         noopRuns: noopRun1 + noopRun2,
         testRuns: testRun1 + testRun2,
